@@ -1,6 +1,7 @@
 ﻿namespace CompositeSpecifications.Core.Repositories
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
@@ -9,7 +10,6 @@
     public abstract class RepositoryBase<T> : IRepository<T> where T : Entity
     {
         private static IDictionary<Guid, T> storage = new Dictionary<Guid, T>();
-        private static object syncRoot = new object();
 
         public static IQueryable<T> All
         {
@@ -45,6 +45,7 @@
 
         public void Delete(Guid id)
         {
+            var syncRoot = ((ICollection)Storage).SyncRoot;
             lock (syncRoot)
             {
                 if (storage.ContainsKey(id))
